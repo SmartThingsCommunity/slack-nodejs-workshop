@@ -16,5 +16,7 @@
   },
   "homepage": "https://github.com/gausnes/smartthings-slack#readme",
   "dependencies": {
+    "@smartthings/dynamodb-context-store": "^1.0.1",
+    "@smartthings/smartapp": "^1.0.4"
   }
 }
