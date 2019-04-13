@@ -42,7 +42,7 @@ receiving an event, tokens need to be stored. This can be done by implementing
 your own storage that captures and persists the attached access and refresh tokens.
 The simpler path is utilizing npm packages written by SmartThings for
 [Firebase](https://github.com/SmartThingsCommunity/firestore-context-store-nodejs)
-or (Dynamo)[https://github.com/SmartThingsCommunity/dynamodb-context-store-nodejs].
+or [Dynamo](https://github.com/SmartThingsCommunity/dynamodb-context-store-nodejs).
 
 We are going to utilize the dynamodb package to store the necessary tokens, to install run the following command:
 
