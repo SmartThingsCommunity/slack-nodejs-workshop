@@ -1,5 +1,8 @@
 const smartapp = require('@smartthings/smartapp')
+const DynamoDBContextStore = require('@smartthings/dynamodb-context-store');
+
 smartapp
+    .contextStore(new DynamoDBContextStore('us-east-2', 'smartthings-slack-context-store'))
     .configureI18n()
     .page('mainPage', (context, page, configData) => {
         page.section('lights', section => {
