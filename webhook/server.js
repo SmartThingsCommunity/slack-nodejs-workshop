@@ -1,5 +1,5 @@
 const express = require('express');
-const smartApp = require('smartapp-lib');
+const smartApp = require('smartapp-lib').smartApp;
 const server = module.exports = express();
 const PORT = process.env.PORT || 8080;
 

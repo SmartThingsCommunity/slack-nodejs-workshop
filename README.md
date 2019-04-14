@@ -13,11 +13,8 @@ aws lambda add-permission --function-name SmartThings-Slack --statement-id smart
    * Depending on your AWS CLI setup, you may need to add `--profile <some_profile_name>` or `--region us-east-2` to that CLI command to make things work
    * If you need to verify that your profile is set up and is touching the correct Lambda functions, run `aws lambda list-functions --region us-east-2 --profile <your_profile_name>` and verify that the SmartThings-Slack Lambda function shows up in the list.
 
-### SmartThings Setup
-* Download the iOS/Android SmartThings Mobile App
-    * Login to your Samsung Account
-        * [Create one](https://account.samsung.com/accounts/v1/MBR/terms#) if you don't already
-    * [Enable Developer Mode](https://smartthings.developer.samsung.com/docs/guides/testing/developer-mode.html)
+### SmartThings Setup in Browser
+
 * Create a Simulated RGB Bulb
     * Navigate to the [legacy developer portal](https://graph-na04-useast2.api.smartthings.com/location/list)
     * Enter `Simulated RGB Bulb` for `Name`
@@ -28,8 +25,15 @@ aws lambda add-permission --function-name SmartThings-Slack --statement-id smart
     * Click `Create`
     
 > You should be able to modify the state (on/off, color) of this
-simulated device through the UI in the downloaded mobile application.
-This will be useful for testing your application
+simulated device through the UI in the mobile application.
+This will be useful for testing your integration
+
+### SmartThings Setup in App
+
+* Download and open the iOS/Android SmartThings Mobile App
+    * Log into your Samsung Account
+        * [Create one](https://account.samsung.com/accounts/v1/MBR/terms#) if you haven't already
+    * [Enable Developer Mode](https://smartthings.developer.samsung.com/docs/guides/testing/developer-mode.html) (required for running custom automations)
 
 ### Slack Setup
 * Navigate to your [Slack Apps](https://api.slack.com/apps)
