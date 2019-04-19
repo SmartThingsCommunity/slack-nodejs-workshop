@@ -59,13 +59,6 @@ aws lambda add-permission --function-name SmartThings-Slack --statement-id smart
    * Under Display Information, click "Add app icon"
       * Upload [this bot icon image](ThingsBot.png) from this repo to give your ThingsBot some identity
         (feel free to find your own bot face image if you'd prefer)
-* In the Features section of the sidebar, navigate to "Slash Commands"
-   * Choose "Create New Command"
-      * Name the command `/thingsbot`
-      * For the Request URL, input your Lambda's API endpoint
-         * Your API endpoint is the API Gateway URL that we set up earlier. It can be found on your Lambda's settings page by selecting the API Gateway trigger
-      * For Short Description, input "Interact with SmartThings"
-      * Click Save
 * Navigate to "Install App" in the Slack API website sidebar
    * Click Install App to Workspace
    * Authorize the app

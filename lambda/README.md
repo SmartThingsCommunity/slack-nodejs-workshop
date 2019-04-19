@@ -72,3 +72,77 @@ In order for your lambda to persist this information a dynamodb table and policy
   * Click `Attach Policy`
 
 Upload your updated lambda function
+
+## Exposing API Gateway Endpoint
+
+* Navigate to your Lambda Function in the AWS Console
+    * Create API Gateway
+        * Select API Gateway from the Designer in the upper section on the left hand
+            * Select `Create a new API` for `API`
+            * Select `Open` for `Security`
+               * The open security setting allows us to handle authentication within our app code rather than passing it off to the API Gateway
+        * Click `Add`
+        * Click `Save`
+    * Add Request Proxying
+        * Select the `API Gateway` Leaf
+        * Click `SmartThings-Slack-API`
+            * This should forward you to the API Gateway configuration
+        * Click `Actions`
+        * Select `Create Resource` under `Resource Actions`
+        * Check `Configure as proxy resource`
+        * Click `Create Resource`
+        * Type `SmartThings-Slack` in for `Lambda Function`
+        * Click `Save`
+        * Click `Ok` on the popup
+* Navigate to your [slack apps](https://api.slack.com/apps)
+    * Click `Slash Commands` under `Features`
+    * Click `Create New Command`
+    * Name the command `/thingsbot`
+    * For the Request URL, input your Lambda's API endpoint with the installedSmartAppId as a request parameter
+        * InstalledSmartApp Ids can be captured using the Live Logging section of the Workspace or through the DynamoDB table.
+        * Your API endpoint is the API Gateway URL that we set up earlier. It can be found on your Lambda's settings page by selecting the API Gateway trigger
+            * eg
+             ```
+             https://*.execute-api.us-east-2.amazonaws.com/default/SmartThings-Slack?installedSmartAppId={{ installedSmartAppId }}
+             ```
+    * For Short Description, input `Interact with SmartThings`
+    * Click Save    
+* Update your Lambda Function
+    * Install `qs` to handle parsing the url encoded payloads from slack
+        * `npm install qs`
+        * This package can be used to parse the payload being emitted by slack
+    * In order to handle requests a stored context needs to be retrieved. This will contain the necessary tokens for invoking SmartThings functionality.
+        * This context can be retrieved using `smartapp.withContext({{ installedSmartAppId }})`.
+    * A device API is exposed from the context `context.api.devices`
+        * Can be used to retrieve devices and invoke commands on configured devices (`context.config.lights`).
+    * Example command `/thingsbot switch on`
+
+## Pushing Events via Webhook
+
+* Navigate to your [slack apps](https://api.slack.com/apps)
+    * Select `ThingsBot`
+    * Click `Incoming Webhooks` under `Features`
+    * Click the toggle to the left of `Activate Incoming Webhooks` to enable 
+    * Click `Add New Webhook to Workspace` at the bottom
+    * Select the Slack Channel you want to send events to
+    * Copy the generated URL
+        * eg `https://hooks.slack.com/services/*/*/*`
+    * This URL can be hit with an HTTP POST request to generate a message using your bot
+        * Try the example message under `Sample curl request to post to a channel:`
+    * Use this URL to post event data from your subscription into slack
+        * Events only contain deviceIds which can be consumed by the API to retrieve the entire object
+* Update your Lambda Function
+    * Install `request` to do HTTP Requests from your function
+        * `npm install request@2.88.0`
+        * `npm install request-promise-native@1.0.7`
+    * Create and emit a payload into Slack:
+    ```
+    await request({
+        method: 'POST',
+        uri: 'https://hooks.slack.com/services/*/*/*',
+        json: true,
+        body: {'text': "Hello, I'm ThingsBot"}
+    });
+    ```
+    * Update the text of that response to show the state of the device
+    * Example message: `Simulated RGB Bulb emitted on for switch`
