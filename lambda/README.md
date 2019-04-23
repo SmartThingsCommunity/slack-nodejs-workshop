@@ -146,3 +146,6 @@ Upload your updated lambda function
     ```
     * Update the text of that response to show the state of the device
     * Example message: `Simulated RGB Bulb emitted on for switch`
+
+
+[cd ../lib](../lib/README.md)
