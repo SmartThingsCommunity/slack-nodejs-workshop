@@ -28,23 +28,39 @@ aws lambda add-permission --function-name SmartThings-Slack --statement-id smart
    * If you need to verify that your profile is set up and is touching the correct Lambda functions, run `aws lambda list-functions --region us-east-2 --profile <your_profile_name>` and verify that the SmartThings-Slack Lambda function shows up in the list.
 
 ### SmartThings Setup
-* Navigate to https://smartthings.developer.samsung.com/workspace/projects
-* Click "Log in With Samsung Account"
-   * Sign into your Samsung account or create one
-* Create a new project
-   * Select `Automation for the SmartThings App`
-   * Enter `Slack`
-   * Select `Register Automation SmartApp`
-   * Select `AWS Lambda`
-   * Enter the ARN from the top right corner of your Lambda function configuration page, then click Next
-   * Select device read (`r:devices:*`) and device execute (`x:devices:*`) for scopes, then click Next
-   * Enter `Slack` for Automation Display Name
-   * Click Save
+* Download the iOS/Android SmartThings Mobile App
+    * Login to your Samsung Account
+        * [Create one](https://account.samsung.com/accounts/v1/MBR/terms#) if you don't already
+    * [Enable Developer Mode](https://smartthings.developer.samsung.com/docs/guides/testing/developer-mode.html)
+* Create SmartApp (SmartThings Integration)
+    * Navigate to the [SmartThings developer portal](https://smartthings.developer.samsung.com/workspace/projects)
+    * Click "Log in With Samsung Account"
+       * Sign into your Samsung account or create one
+    * Create a new project
+       * Select `Automation for the SmartThings App`
+       * Enter `Slack`
+       * Select `Register Automation SmartApp`
+       * Select `AWS Lambda`
+       * Enter the ARN from the top right corner of your Lambda function configuration page, then click Next
+       * Select device read (`r:devices:*`) and device execute (`x:devices:*`) for scopes, then click Next
+       * Enter `Slack` for Automation Display Name
+       * Click Save
+* Create a Simulated RGB Bulb
+    * Navigate to the [legacy developer portal](https://graph-na04-useast2.api.smartthings.com/location/list)
+    * Enter `Simulated RGB Bulb` for `Name`
+    * Enter  `Simulated RGB Bulb` for `Device Network Id`
+    * Select `Simulated RGB Bulb` for `Type`
+    * Select one of your locations to install the device on
+       * If no locations navigate to [location list](https://graph-na04-useast2.api.smartthings.com/location/list), this will redirect you to the correct shard
+    * Click `Create`
+    
+> You should be able to modify the state (on/off, color) of this
+simulated device through the UI in the downloaded mobile application.
+This will be useful for testing your application
 
 ### Slack Setup
-
-* Navigate to https://api.slack.com/apps
-   * If you don't have a Slack workspace yet, click "sign in to your Slack account" and then "Create a new workspace"
+* Navigate to your [Slack Apps](https://api.slack.com/apps)
+   * If you don't have a Slack workspace yet, click "sign in to your Slack account" and then ["Create a new workspace"](https://slack.com/create#email)
    * Input an email for your workspace, then input the 6 digit code that Slack will email to you
    * Give your workspace a name, like "SmartThings IoT Fuse"
    * For a project name, go with something like "SmartThings-Slack"

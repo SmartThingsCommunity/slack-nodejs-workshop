@@ -1,0 +1,19 @@
+{
+  "name": "smartthings-slack_webhook",
+  "version": "1.0.0",
+  "description": "SmartThings Integration to Slack using a Webhook Automation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@smartthings/smartapp": "^1.1.3",
+    "express": "^4.16.4",
+    "qs": "^6.7.0",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
+    "smartapp-lib": "file:../lib"
+  }
+}
