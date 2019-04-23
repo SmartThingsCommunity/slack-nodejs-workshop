@@ -1,7 +1,7 @@
 const express = require('express');
 const smartApp = require('smartapp-lib');
 const server = module.exports = express();
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 
 server.use(express.json());
 
