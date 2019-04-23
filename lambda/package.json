@@ -17,6 +17,6 @@
   "homepage": "https://github.com/gausnes/smartthings-slack#readme",
   "dependencies": {
     "qs": "^6.7.0",
-    "smartapp-lib": "file:../lib"
+    "smartapp-lib": "file:smartapp-lib-1.0.0.tgz"
   }
 }
