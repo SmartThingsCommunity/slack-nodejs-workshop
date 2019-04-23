@@ -54,5 +54,12 @@ npm uninstall @smartthings/dynamodb-context-store
 npm uninstall request
 npm uninstall request-promise-native
 ```
+* Bundling library to include for deployment
+    * `npm pack ../lib`
+    * `npm install smartapp-lib-1.0.0.tgz`
+    
+## Updating Library
+* Make sure you repack in the respective project after updating this library
+    * `npm pack ../lib`
 
 [cd ../webhook](../webhook/README.md)

@@ -23,7 +23,7 @@ exports.handler = async (event, context, callback) => {
 
         const configDevices = apiDevices.map((device) => {
             return smartAppContext.config.lights.find((configured) => {
-                return configured.deviceConfig.id === device.id;
+                return configured.deviceConfig.deviceId === device.deviceId;
             });
         });
         console.log('request', 'context-config-devices', configDevices);
