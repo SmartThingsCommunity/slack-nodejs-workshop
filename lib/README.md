@@ -1,6 +1,6 @@
-## Create Library
+# Library
 
-### Move SmartApp Code into this Library
+## Move SmartApp Code into this Library
 * Create a file `smartApp.js`
     * `touch smartApp.js`
 * Copy `const smartapp = ...` from your lambda into `smartApp.js`
@@ -31,7 +31,7 @@ author:
 license: (ISC)
 ```
 
-### Add SmartThings Dependencies
+### Add Dependencies
 ```bash
 npm install @smartthings/smartapp --save
 npm install @smartthings/dynamodb-context-store --save
@@ -54,3 +54,5 @@ npm uninstall @smartthings/dynamodb-context-store
 npm uninstall request
 npm uninstall request-promise-native
 ```
+
+[cd ../webhook](../webhook/README.md)

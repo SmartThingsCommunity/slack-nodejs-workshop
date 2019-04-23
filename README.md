@@ -73,7 +73,7 @@ This will be useful for testing your application
    * Create the app
 * Scroll to the bottom of the Basic Information section for your app
    * Under Display Information, click "Add app icon"
-      * Upload [this bot icon image](ThingsBot.png) from this repo to give your ThingsBot some identity
+      * Upload [this bot icon image](etc/ThingsBot.png) from this repo to give your ThingsBot some identity
         (feel free to find your own bot face image if you'd prefer)
 * Navigate to "Install App" in the Slack API website sidebar
    * Click Install App to Workspace
@@ -86,3 +86,5 @@ This will be useful for testing your application
    * Flip the Interactivity switch to On
    * For the Request URL, input `<YOUR_API_GATEWAY_URL>/slack/receive`
    * Click "Save Changes"
+
+[cd lambda](lambda/README.md)

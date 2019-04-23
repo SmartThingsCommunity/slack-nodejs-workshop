@@ -1,4 +1,4 @@
-# SmartThings Slack Lambda Integration
+# Lambda Integration
 
 ## Setup
 

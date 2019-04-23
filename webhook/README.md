@@ -1,4 +1,4 @@
-# Moving to WebHooks
+# WebHooks Integration
 
 ## Code Changes
 * [Break SmartApp into Library](../README.md)
