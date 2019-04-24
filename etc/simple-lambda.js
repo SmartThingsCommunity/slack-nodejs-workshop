@@ -44,39 +44,40 @@ exports.handler = async (event, context, callback) => {
     console.log('request', 'event', event);
     if (event.resource === '/SmartThings-Slack') {
       console.log('handleSlashCommand', 'text', text);
+      const text = qs.parse(event.body).text;
       const parts = text.split(" ");
       const deviceDescription = parts[0];
       const command = parts[1];
-    
+
       const smartAppContext = await smartApp.withContext(process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID);
       console.log('handleSlashCommand', 'context', smartAppContext);
       console.log('handleSlashCommand', 'context-config', smartAppContext.config);
-    
+
       const devices = (await smartAppContext.api.devices.listAll()).items;
       console.log('handleSlashCommand', 'api-device-list', devices);
-    
+
       const apiDevices = devices.filter((device) => {
         return device.label.includes(deviceDescription);
       });
       console.log('handleSlashCommand', 'api-devices', apiDevices);
-    
+
       const configDevices = apiDevices.map((device) => {
         return smartAppContext.config.lights.find((configured) => {
           return configured.deviceConfig.deviceId === device.deviceId;
         });
       });
       console.log('handleSlashCommand', 'context-config-devices', configDevices, command);
-    
+
       await smartAppContext.api.devices.sendCommands(configDevices, 'switch', command);
       console.log('handleSlashCommand', 'command-complete');
-    
+
       const responseText = `Sent ${command} to ${apiDevices.map((device) => device.label)}`;
       const body = {
         "text": "Device Commands",
         "attachments": [{
           "text": responseText
         }]
-      }; 
+      };
 
         context.succeed({
             "statusCode": 200,
