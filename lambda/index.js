@@ -6,12 +6,13 @@ exports.handler = async (event, context, callback) => {
     if (event.resource === '/SmartThings-Slack') {
         const text = qs.parse(event.body).text;
         const response = await handleSlashCommand(text);
+        console.log('response', 'response', response);
         context.succeed({
             "statusCode": 200,
             "headers": {
                 "Content-Type": "application/json"
             },
-            "body": response
+            "body": JSON.stringify(response)
         });
     } else {
         smartApp.handleLambdaCallback(event, context, callback);
