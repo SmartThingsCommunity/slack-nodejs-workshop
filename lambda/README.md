@@ -183,34 +183,58 @@ Upload your updated lambda function
         * `npm install qs@6.5.2 --save`
         * This package can be used to parse the payload being emitted by slack
     * In order to handle requests a stored context needs to be retrieved. This will contain the necessary tokens for invoking SmartThings functionality.
-        * This context can be retrieved using 
+        * This context can be retrieved using `const smartAppContext = smartApp.withContext(process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID);`
+    * A device API is exposed from the context `smartAppContext.api.devices`
+        * Can be used to retrieve devices and invoke commands on configured devices (`smartAppContext.config.lights`).
+    * Example Handling:
         ```javascript
         exports.handler = async (event, context, callback) => {
           console.log('request', 'event', event);
           if (event.resource === '/SmartThings-Slack') {
             const smartAppContext = smartApp.withContext(process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID);
+            const parts = text.split(" ");
+            const deviceDescription = parts[0];
+            const command = parts[1];
+      
+            const devices = (await smartAppContext.api.devices.listAll()).items;
+            console.log('handleSlashCommand', 'api-device-list', devices);
+          
+            const apiDevices = devices.filter((device) => {
+              return device.label.includes(deviceDescription);
+            });
+            console.log('handleSlashCommand', 'api-devices', apiDevices);
+          
+            const configDevices = apiDevices.map((device) => {
+              return smartAppContext.config.lights.find((configured) => {
+                return configured.deviceConfig.deviceId === device.deviceId;
+              });
+            });
+            console.log('handleSlashCommand', 'context-config-devices', configDevices, command);
+          
+            await smartAppContext.api.devices.sendCommands(configDevices, 'switch', command);
+            console.log('handleSlashCommand', 'command-complete');
+
+            const responseText = `Ok`;
+            const body = {
+              "text": "Device Commands",
+              "attachments": [{
+                "text": responseText
+              }]
+            };
+      
             context.succeed({
                 "statusCode": 200,
                 "headers": {
                     "Content-Type": "application/json"
                 },
-                "body": JSON.stringify({
-                    "text": "Device Commands",
-                    "attachments": [
-                        {
-                            "text": `Sent ${command} to ${apiDevices.map((device) => device.label)}`
-                        }
-                    ]
-                })
+                "body": body
             });
-        } else {
+          } else {
             smartApp.handleLambdaCallback(event, context, callback);
+          }
         }
-        console.log('request', 'event', event);
         ```
-    * A device API is exposed from the context `smartAppContext.api.devices`
-        * Can be used to retrieve devices and invoke commands on configured devices (`smartAppContext.config.lights`).
-    * Example command `/thingsbot switch on`
+       * Example command `/thingsbot switch on`
 
 ## Pushing Events via Webhook
 
@@ -247,7 +271,7 @@ Upload your updated lambda function
        const device = await context.api.devices.get(deviceEvent.deviceId);
        console.log('lightsSubscription', 'device', device);
    
-       const body = {'text': "Hello, I'm ThingsBot"};
+       const body = {'text': "Received Switch Event"};
        const response = await request({
          method: 'POST',
          uri: process.env.SLACK_SMARTTHINGS_WEBHOOK,

@@ -42,6 +42,8 @@ npm install request-promise-native@1.0.7 --save
 ```
 async function handleSlashCommand(slashCommandBody) {
   console.log('handleSlashCommand', 'slashCommandBody', slashCommandBody);
+  {{ code }}
+  return body;
 }
 ```    
 * Export `smartApp` and `handleSlashCommand` function
