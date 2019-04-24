@@ -52,7 +52,8 @@ npm install @smartthings/smartapp --save
         * `Client Secret` from the SmartApp `Automation` page under `Develop`
         * Regenerate if needed
 
-### Coding
+### Initial Lambda
+
 Add the following code to `index.js`
 ```javascript
 const SmartApp = require('@smartthings/smartapp');
@@ -67,12 +68,13 @@ smartApp.configureI18n()
     page.section('lights', section => {
       section.deviceSetting('lights').capabilities(['switch']).multiple(true).permissions('rx');
     });
-  })
+  });
 
 exports.handler = async (event, context, callback) => {
     smartApp.handleLambdaCallback(event, context, callback);
 };
 ```
+
 ## Deploying
 
 * Create zip of all files within this folder
@@ -92,6 +94,7 @@ aws lambda update-function-code --function-name SmartThings-Slack --zip-file fil
 ```
 
 ## Installation
+
 * Navigate to `Automations` with your SmartThings Mobile App
 * Select the `+`
 * Scroll down and tap `Slack Lambda`
@@ -138,6 +141,7 @@ Upload your updated lambda function
 ## Exposing API Gateway Endpoint
 
 ### Configure AWS
+
 * Navigate to your Lambda Function in the AWS Console
     * Create API Gateway
         * Select API Gateway from the Designer in the `Add triggers` section
@@ -163,6 +167,7 @@ Upload your updated lambda function
         * Installed SmartApp IDs can be captured through events which are viewable under Live Logging section of the [Workspace](https://smartthings.developer.samsung.com/workspace/projects)
         
 ### Configure Slack
+
 * Navigate to your [slack apps](https://api.slack.com/apps)
     * Click `Slash Commands` under `Features`
     * Click `Create New Command`
@@ -177,7 +182,8 @@ Upload your updated lambda function
     * For `Short Description`, input `Interact with SmartThings`
     * Click `Save`
     
-### Coding
+### Lambda Function Updates
+
 * Update your Lambda Function
     * Install `qs` to handle parsing the url encoded payloads from slack
         * `npm install qs@6.5.2 --save`
@@ -192,26 +198,14 @@ Upload your updated lambda function
           console.log('request', 'event', event);
           if (event.resource === '/SmartThings-Slack') {
             const smartAppContext = smartApp.withContext(process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID);
-            const parts = text.split(" ");
-            const deviceDescription = parts[0];
-            const command = parts[1];
+            const text = qs.parse(event.body).text;
+            console.log('handleSlashCommand', text);
       
             const devices = (await smartAppContext.api.devices.listAll()).items;
-            console.log('handleSlashCommand', 'api-device-list', devices);
+            console.log('handleSlashCommand', 'api-device-list', devices);      
+            console.log('handleSlashCommand', 'context-config-devices', smartAppContext.config.lights);
           
-            const apiDevices = devices.filter((device) => {
-              return device.label.includes(deviceDescription);
-            });
-            console.log('handleSlashCommand', 'api-devices', apiDevices);
-          
-            const configDevices = apiDevices.map((device) => {
-              return smartAppContext.config.lights.find((configured) => {
-                return configured.deviceConfig.deviceId === device.deviceId;
-              });
-            });
-            console.log('handleSlashCommand', 'context-config-devices', configDevices, command);
-          
-            await smartAppContext.api.devices.sendCommands(configDevices, 'switch', command);
+            await smartAppContext.api.devices.sendCommands(smartAppContext.config.lights, 'switch', 'on');
             console.log('handleSlashCommand', 'command-complete');
 
             const responseText = `Ok`;
@@ -234,7 +228,11 @@ Upload your updated lambda function
           }
         }
         ```
-       * Example command `/thingsbot switch on`
+    * Example command `/thingsbot switch off`
+
+### Coding
+
+   * Parse text and select a configured light
 
 ## Pushing Events via Webhook
 
@@ -281,7 +279,10 @@ Upload your updated lambda function
        console.log('lightsSubscription', 'slack-webhook', response);
      });
     ```
-    * Update the text of that response to show the state of the device
-    * Example message: `Simulated RGB Bulb emitted on for switch`
+    
+### Coding
+
+* Update the text of the response to show context on the device
+* Example message: `Simulated RGB Bulb emitted on for switch`
 
 [cd ../lib](../lib/README.md)
