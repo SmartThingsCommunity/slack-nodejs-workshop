@@ -16,6 +16,12 @@ npm install @smartthings/smartapp --save
 
 ### AWS Configuration
 
+* [Run](https://smartthings.developer.samsung.com/docs/guides/smartapps/aws-lambda.html):
+```bash
+aws lambda add-permission --function-name SmartThings-Slack --statement-id smartthings --principal 906037444270 --action lambda:InvokeFunction
+```
+   * Depending on your AWS CLI setup, you may need to add `--profile <some_profile_name>` or `--region us-east-2` to that CLI command to make things work
+   * If you need to verify that your profile is set up and is touching the correct Lambda functions, run `aws lambda list-functions --region us-east-2 --profile <your_profile_name>` and verify that the SmartThings-Slack Lambda function shows up in the list.
 * Navigate to [Lambda Creation in AWS Console](https://console.aws.amazon.com/lambda/home?region=us-east-2#/create)
     * Select `Author from Scratch`
     * Enter `SmartThings-Slack` for `Function Name`
