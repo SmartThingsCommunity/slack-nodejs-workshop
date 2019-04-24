@@ -152,18 +152,18 @@ Upload your updated lambda function
          ```
          https://*.execute-api.us-east-2.amazonaws.com/default/SmartThings-Slack
          ```
-     * Add the InstalledSmartAppIds as an environment variable to your Lambda
-        * key: `SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID`
-            * Your InstalledSmartAppId can be found by viewing [your DynamoDB table](https://console.aws.amazon.com/dynamodb/home?region=us-east-2#tables:selected=smartthings-slack-context-store;tab=items)
-            * InstalledSmartApp IDs can be captured through events which are viewable under Live Logging section of the Workspace.
     * For Short Description, input `Interact with SmartThings`
     * Click Save    
 * Update your Lambda Function
     * Install `qs` to handle parsing the url encoded payloads from slack
-        * `npm install qs`
+        * `npm install qs --save`
         * This package can be used to parse the payload being emitted by slack
+    * Add the Installed SmartApp ID as an environment variable to your [Lambda](https://console.aws.amazon.com/lambda/home?region=us-east-2#/functions/SmartThings-Slack?tab=graph)
+        * key: `SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID`
+            * Your InstalledSmartAppId can be found by viewing [your DynamoDB table](https://console.aws.amazon.com/dynamodb/home?region=us-east-2#tables:selected=smartthings-slack-context-store;tab=items)
+            * Installed SmartApp IDs can be captured through events which are viewable under Live Logging section of the [Workspace](https://smartthings.developer.samsung.com/workspace/projects)
     * In order to handle requests a stored context needs to be retrieved. This will contain the necessary tokens for invoking SmartThings functionality.
-        * This context can be retrieved using `smartapp.withContext({{ installedSmartAppId }})`.
+        * This context can be retrieved using `smartApp.withContext(process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID)`.
     * A device API is exposed from the context `context.api.devices`
         * Can be used to retrieve devices and invoke commands on configured devices (`context.config.lights`).
     * Example command `/thingsbot switch on`
@@ -177,7 +177,9 @@ Upload your updated lambda function
     * Click `Add New Webhook to Workspace` at the bottom
     * Select the Slack Channel you want to send events to
     * Copy the generated URL
-        * Add this as an environment variable for your lambda function with the key `SLACK_SMARTTHINGS_WEBHOOK`
+        * Add this as an environment variable for
+        [your lambda function](https://console.aws.amazon.com/lambda/home?region=us-east-2#/functions/SmartThings-Slack?tab=graph)
+        with the key `SLACK_SMARTTHINGS_WEBHOOK`
         * eg `https://hooks.slack.com/services/*/*/*` 
     * This URL can be hit with an HTTP POST request to generate a message using your bot
         * Try the example message under `Sample curl request to post to a channel:`
@@ -185,13 +187,13 @@ Upload your updated lambda function
         * Events only contain deviceIds which can be consumed by the API to retrieve the entire object
 * Update your Lambda Function
     * Install `request` to do HTTP Requests from your function
-        * `npm install request@2.88.0`
-        * `npm install request-promise-native@1.0.7`
+        * `npm install request@2.88.0 --save`
+        * `npm install request-promise-native@1.0.7 --save`
     * Create and emit a payload into Slack:
     ```
     await request({
         method: 'POST',
-        uri: 'https://hooks.slack.com/services/*/*/*',
+        uri: process.env.SLACK_SMARTTHINGS_WEBHOOK,
         json: true,
         body: {'text': "Hello, I'm ThingsBot"}
     });
