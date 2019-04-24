@@ -28,11 +28,60 @@ Create zip of all files within this folder
 zip -r smartthings-slack.zip *
 ```
 
+### AWS Configuration
+
+* Navigate to [Lambda Creation in AWS Console](https://console.aws.amazon.com/lambda/home?region=us-east-2#/create)
+    * Select `Author from Scratch`
+    * Enter `SmartThings-Slack` for `Function Name`
+    * Select `Node.js 8.10` for `Runtime`
+    * Expand `Choose or create an execution role` and name the role `SmartThings-Slack`
+    * Click `Create function`
+    * Keep this tab open
+
+### SmartThings Configuration
+
+* Create SmartApp (SmartThings Integration)
+    * Navigate to the [SmartThings developer portal](https://smartthings.developer.samsung.com/workspace/projects)
+    * Click `Log in With Samsung Account`
+        * Sign into your Samsung account or create one
+    * Create a new project
+        * Select `Automation for the SmartThings App`
+        * Enter `Slack Lambda`
+        * Select `Register Automation SmartApp`
+        * Select `AWS Lambda`
+        * Enter the ARN from the top right corner of your Lambda function configuration page, then click Next
+        * Select device read (`r:devices:*`) and device execute (`x:devices:*`) for scopes, then click Next
+        * Enter `Slack Lambda` for Automation Display Name
+        * Click Save
+        * Keep this tab open
+
+### Deploying
+
+* From your `SmartThings-Slack` Function page
+    * Add Environment Variables
+        * Key: `SMARTTHINGS_SLACK_CLIENT_ID` 
+            * `Client ID` from the SmartApp `Automation` page under `Develop`
+            * _This page should be open from the previous step_
+        * Key: `SMARTTHINGS_SLACK_CLIENT_SECRET`
+            * `Client Secret` from the SmartApp `Automation` page under `Develop`
+            * Regenerate if needed
+    * Under `Function Code` select `Upload a .zip file` for `Code entry type`
+    * Upload a `.zip` of the contents in `lambda`
+     
+### Updating
+
 Upload the respective zip to AWS either through the console UI or using the CLI
 
 ```
 aws lambda update-function-code --function-name SmartThings-Slack --zip-file fileb://smartthings-slack.zip
 ```
+
+## Installation
+* Navigate to `Automations` with your SmartThings Mobile App
+* Select the `+`
+* Scroll down and tap `Slack Lambda`
+* Select your Simulated Device(s)
+* Tap save
 
 ## Adding SmartThings Context Storage
 
@@ -52,24 +101,22 @@ npm install @smartthings/dynamodb-context-store --save
 
 In order for your lambda to persist this information a dynamodb table and policy need to be created.
 
-[Create a table](https://console.aws.amazon.com/dynamodb/home?region=us-east-2#create-table:):
-  * Name the table to `smartthings-slack-context-store`
-  * Set the primary key to `installedAppId`
-
-[Create new policy](https://console.aws.amazon.com/iam/home?region=us-east-2#/policies$new?step=edit):
-  * Select the `JSON` tab
-  * Copy `../etc/dynamo-policy.json` into the text field
-  * Replace `{{ AWS Account Id }}` with your [AWS Account Id](https://console.aws.amazon.com/billing/home?#/account)
-  * Click `Review Policy`
-  * Input `SmartThingsSlackContextStore` as the name
-  * Click `Create Policy`
-
-[Add the policy above to your lambda's role](https://console.aws.amazon.com/iam/home?region=us-east-2#/roles):
-  * Select role with name `SmartThings-Slack-role-*`
-  * Click `Attach Policies`
-  * Search for `SmartThingsSlackContextStore`
-  * Select the checkbox next the found policy
-  * Click `Attach Policy`
+* [Create a table](https://console.aws.amazon.com/dynamodb/home?region=us-east-2#create-table:):
+    * Name the table to `smartthings-slack-context-store`
+    * Set the primary key to `installedAppId`
+* [Create new policy](https://console.aws.amazon.com/iam/home?region=us-east-2#/policies$new?step=edit):
+    * Select the `JSON` tab
+    * Copy `../etc/dynamo-policy.json` into the text field
+    * Replace `{{ AWS Account Id }}` with your [AWS Account Id](https://console.aws.amazon.com/billing/home?#/account)
+    * Click `Review Policy`
+    * Input `SmartThingsSlackContextStore` as the name
+    * Click `Create Policy`
+* [Add the policy above to your lambda's role](https://console.aws.amazon.com/iam/home?region=us-east-2#/roles):
+    * Select role with name `SmartThings-Slack-role-*`
+    * Click `Attach Policies`
+    * Search for `SmartThingsSlackContextStore`
+    * Select the checkbox next the found policy
+    * Click `Attach Policy`
 
 Upload your updated lambda function
 
@@ -77,7 +124,7 @@ Upload your updated lambda function
 
 * Navigate to your Lambda Function in the AWS Console
     * Create API Gateway
-        * Select API Gateway from the Designer in the upper section on the left hand
+        * Select API Gateway from the Designer in the `Add triggers` section
             * Select `Create a new API` for `API`
             * Select `Open` for `Security`
                * The open security setting allows us to handle authentication within our app code rather than passing it off to the API Gateway
@@ -98,13 +145,17 @@ Upload your updated lambda function
     * Click `Slash Commands` under `Features`
     * Click `Create New Command`
     * Name the command `/thingsbot`
-    * For the Request URL, input your Lambda's API endpoint with the installedSmartAppId as a request parameter
-        * InstalledSmartApp Ids can be captured using the Live Logging section of the Workspace or through the DynamoDB table.
-        * Your API endpoint is the API Gateway URL that we set up earlier. It can be found on your Lambda's settings page by selecting the API Gateway trigger
-            * eg
-             ```
-             https://*.execute-api.us-east-2.amazonaws.com/default/SmartThings-Slack?installedSmartAppId={{ installedSmartAppId }}
-             ```
+    * For the Request URL, input your Lambda's API endpoint
+        * API endpoint is the API Gateway URL that configured in the prior section.
+        * The API endpoint can be found on your Lambda's settings page by selecting the API Gateway trigger
+        * eg
+         ```
+         https://*.execute-api.us-east-2.amazonaws.com/default/SmartThings-Slack
+         ```
+     * Add the InstalledSmartAppIds as an environment variable to your Lambda
+        * key: `SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID`
+            * Your InstalledSmartAppId can be found by viewing [your DynamoDB table](https://console.aws.amazon.com/dynamodb/home?region=us-east-2#tables:selected=smartthings-slack-context-store;tab=items)
+            * InstalledSmartApp IDs can be captured through events which are viewable under Live Logging section of the Workspace.
     * For Short Description, input `Interact with SmartThings`
     * Click Save    
 * Update your Lambda Function
@@ -126,7 +177,8 @@ Upload your updated lambda function
     * Click `Add New Webhook to Workspace` at the bottom
     * Select the Slack Channel you want to send events to
     * Copy the generated URL
-        * eg `https://hooks.slack.com/services/*/*/*`
+        * Add this as an environment variable for your lambda function with the key `SLACK_SMARTTHINGS_WEBHOOK`
+        * eg `https://hooks.slack.com/services/*/*/*` 
     * This URL can be hit with an HTTP POST request to generate a message using your bot
         * Try the example message under `Sample curl request to post to a channel:`
     * Use this URL to post event data from your subscription into slack
@@ -146,6 +198,5 @@ Upload your updated lambda function
     ```
     * Update the text of that response to show the state of the device
     * Example message: `Simulated RGB Bulb emitted on for switch`
-
 
 [cd ../lib](../lib/README.md)

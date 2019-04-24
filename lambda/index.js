@@ -8,7 +8,7 @@ exports.handler = async (event, context, callback) => {
         const deviceDescription = text[0];
         const command = text[1];
 
-        const installedSmartAppId = event.queryStringParameters.installedSmartAppId;
+        const installedSmartAppId = process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID;
         const smartAppContext = await smartApp.withContext(installedSmartAppId);
         console.log('request', 'context', smartAppContext);
         console.log('request', 'context-config', smartAppContext.config);

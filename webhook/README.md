@@ -12,7 +12,7 @@
     * Forward to the port your local server is listening on
 
 ## SmartThings Configuration
-* [Create a new Project](https://smartthings.developer.samsung.com/workspace/projects/new)
+* [Create a new Project](https://smartthings.developer.samsung.com/workspace/projects/new) or reuse your existing project
     * Click `CONTINUE` under `Automation for the SmartThings App`
     * Enter `Slack-Webhook` under `Give this project a name`
     * Click `Create Project`
@@ -28,12 +28,28 @@
     * Click `Go To Project Overview`
     * Click `Deploy to test`
     * Click `Got it`
+* Environment Configuration
+    * These environment variables can be retrieved from the ones set in your [lambda function](https://console.aws.amazon.com/lambda/home?region=us-east-2#/functions/SmartThings-Slack?tab=graph)
+    * Key: `SMARTTHINGS_SLACK_CLIENT_ID` 
+        * `export SMARTTHINGS_SLACK_CLIENT_ID=*`
+        * Also found in `Client ID` from the [SmartApp `Automation` page](https://smartthings.developer.samsung.com/workspace/projects) under `Develop`
+    * Key: `SMARTTHINGS_SLACK_CLIENT_SECRET`
+        * `export SMARTTHINGS_SLACK_CLIENT_SECRET=*`
+        * Also found in `Client Secret` from the [SmartApp `Automation` page](https://smartthings.developer.samsung.com/workspace/projects) under `Develop`
+            * Regenerate if needed
+    * Key: `$SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID`
+        * `export $SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID=*`   
+        * Also found in Live Logs for your SmartApp in the [Developer Workspace](https://smartthings.developer.samsung.com/workspace/projects)
+    * Key: `SLACK_SMARTTHINGS_WEBHOOK`
+        * `export SLACK_SMARTTHINGS_WEBHOOK=*`
+        * Also found at [your Slack Apps](https://api.slack.com/apps)
+
 
 ## Installation
 * Navigate to `Automations` with your SmartThings Mobile App
 * Select the `+`
 * Scroll down and tap `Slack Webhook`
-* Select your Simulated Devices
+* Select your Simulated Device(s)
 * Tap save
 
 ## Deploying to Heroku
@@ -58,6 +74,14 @@ planning on continuing to develop in the future.
         "node": "11.9.0"
       }
     ```
+* Add Environment Variables
+    *
+    ```
+    heroku config:set SMARTTHINGS_SLACK_CLIENT_ID=$SMARTTHINGS_SLACK_CLIENT_ID
+    heroku config:set SMARTTHINGS_SLACK_CLIENT_SECRET=$SMARTTHINGS_SLACK_CLIENT_SECRET
+    heroku config:set SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID=$SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID
+    heroku config:set SLACK_SMARTTHINGS_WEBHOOK=$SLACK_SMARTTHINGS_WEBHOOK
+    ````
 * Commit
     * `git add .`
     * `git commit -m "Initial Heroku"`
