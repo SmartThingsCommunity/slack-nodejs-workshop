@@ -331,4 +331,8 @@ aws s3 cp ./smartthings-slack.zip s3://smartthings-slack-<unique ID>/ --region u
 aws lambda update-function-code --function-name SmartThings-Slack --region us-east-2 --s3-bucket smartthings-slack-<unique ID> --s3-key smartthings-slack.zip
 ```
 
-[cd ../lib](../lib/README.md)
+## Next
+
+You should have ended up with something similar to this [lambda function](../etc/simple-lambda.js),
+we are going to break this functionality into a library to allow for our interactions with Slack
+and SmartThings to execute in another frameworks. Continue to [cd ../lib](../lib/README.md).

@@ -11,13 +11,13 @@ const smartApp = new SmartApp({
 });
 
 smartApp.contextStore(new DynamoDBContextStore('us-east-2', 'smartthings-slack-context-store'))
-  .configureI18n({directory: `${__dirname}/locales`})
+  .configureI18n({ directory: `${ __dirname }/locales` })
   .page('mainPage', (context, page, configData) => {
     page.section('lights', section => {
       section.deviceSetting('lights').capabilities(['switch']).multiple(true).permissions('rx');
     });
   })
-  .updated( async (context, updateData) => {
+  .updated(async (context, updateData) => {
     console.log('updated', JSON.stringify(updateData));
     await context.api.subscriptions.unsubscribeAll();
     console.log('updated', 'unsubscribeAll() executed');
@@ -30,7 +30,7 @@ smartApp.contextStore(new DynamoDBContextStore('us-east-2', 'smartthings-slack-c
     const device = await context.api.devices.get(deviceEvent.deviceId);
     console.log(subscriptionHandlerName, 'device', device);
 
-    const payload = {"text": `${device.label} emitted ${deviceEvent.value} for ${deviceEvent.attribute}`};
+    const payload = { "text": `${ device.label } emitted ${ deviceEvent.value } for ${ deviceEvent.attribute }` };
     const response = await request({
       method: 'POST',
       uri: process.env.SLACK_SMARTTHINGS_WEBHOOK,
@@ -41,53 +41,53 @@ smartApp.contextStore(new DynamoDBContextStore('us-east-2', 'smartthings-slack-c
   });
 
 exports.handler = async (event, context, callback) => {
-    console.log('request', 'event', event);
-    if (event.resource === '/SmartThings-Slack') {
-      console.log('handleSlashCommand', 'text', text);
-      const text = qs.parse(event.body).text;
-      const parts = text.split(" ");
-      const deviceDescription = parts[0];
-      const command = parts[1];
+  console.log('request', 'event', event);
+  if (event.resource === '/SmartThings-Slack') {
+    console.log('handleSlashCommand', 'text', text);
+    const text = qs.parse(event.body).text;
+    const parts = text.split(" ");
+    const deviceDescription = parts[0];
+    const command = parts[1];
 
-      const smartAppContext = await smartApp.withContext(process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID);
-      console.log('handleSlashCommand', 'context', smartAppContext);
-      console.log('handleSlashCommand', 'context-config', smartAppContext.config);
+    const smartAppContext = await smartApp.withContext(process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID);
+    console.log('handleSlashCommand', 'context', smartAppContext);
+    console.log('handleSlashCommand', 'context-config', smartAppContext.config);
 
-      const devices = (await smartAppContext.api.devices.listAll()).items;
-      console.log('handleSlashCommand', 'api-device-list', devices);
+    const devices = (await smartAppContext.api.devices.listAll()).items;
+    console.log('handleSlashCommand', 'api-device-list', devices);
 
-      const apiDevices = devices.filter((device) => {
-        return device.label.includes(deviceDescription);
+    const apiDevices = devices.filter((device) => {
+      return device.label.includes(deviceDescription);
+    });
+    console.log('handleSlashCommand', 'api-devices', apiDevices);
+
+    const configDevices = apiDevices.map((device) => {
+      return smartAppContext.config.lights.find((configured) => {
+        return configured.deviceConfig.deviceId === device.deviceId;
       });
-      console.log('handleSlashCommand', 'api-devices', apiDevices);
+    });
+    console.log('handleSlashCommand', 'context-config-devices', configDevices, command);
 
-      const configDevices = apiDevices.map((device) => {
-        return smartAppContext.config.lights.find((configured) => {
-          return configured.deviceConfig.deviceId === device.deviceId;
-        });
-      });
-      console.log('handleSlashCommand', 'context-config-devices', configDevices, command);
+    await smartAppContext.api.devices.sendCommands(configDevices, 'switch', command);
+    console.log('handleSlashCommand', 'command-complete');
 
-      await smartAppContext.api.devices.sendCommands(configDevices, 'switch', command);
-      console.log('handleSlashCommand', 'command-complete');
+    const responseText = `Sent ${ command } to ${ apiDevices.map((device) => device.label) }`;
+    const body = {
+      "text": "Device Commands",
+      "attachments": [{
+        "text": responseText
+      }]
+    };
 
-      const responseText = `Sent ${command} to ${apiDevices.map((device) => device.label)}`;
-      const body = {
-        "text": "Device Commands",
-        "attachments": [{
-          "text": responseText
-        }]
-      };
-
-        context.succeed({
-            "statusCode": 200,
-            "headers": {
-                "Content-Type": "application/json"
-            },
-            "body": JSON.stringify(body)
-        });
-    } else {
-        smartApp.handleLambdaCallback(event, context, callback);
-    }
+    context.succeed({
+      "statusCode": 200,
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": JSON.stringify(body)
+    });
+  } else {
+    smartApp.handleLambdaCallback(event, context, callback);
+  }
 };
 
