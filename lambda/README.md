@@ -204,7 +204,7 @@ Upload your updated lambda function
     exports.handler = async (event, context, callback) => {
         console.log('request', 'event', event);
         if (event.resource === '/SmartThings-Slack') {
-            const smartAppContext = smartApp.withContext(process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID);
+            const smartAppContext = await smartApp.withContext(process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID);
             const text = qs.parse(event.body).text;
             console.log('handleSlashCommand', text);
       
