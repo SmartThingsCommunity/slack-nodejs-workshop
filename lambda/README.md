@@ -295,4 +295,40 @@ Upload your updated lambda function
 * Update the text of the response to show context on the device
 * Example message: `Simulated RGB Bulb emitted on for switch`
 
+### Storing Code in Amazon S3
+
+Lambda enforces a 50 MB limit on the size of directly uploaded zip files. To remove this limit we can instead upload our zip file to an Amazon S3 bucket, and then tell our Lambda function to pull our code from there. Another benefit to this is that the `aws s3` command is a bit more built out than the `aws lambda` command, in that it gives us a progress bar for our code uploads.
+
+S3 bucket names exist in a shared namespace across all users, so you'll need to name your bucket uniquely. This name will only effect the CLI commands below, as nothing in our code references the S3 bucket. 
+
+From the command line, run the following commands:
+
+* Create an S3 bucket named `smartthings-slack-<some unique ID, maybe your Github username>`:
+
+```bash
+aws s3 mb s3://smartthings-slack-<unique ID> --region us-east-2
+```
+
+* Upload your zip file to your S3 bucket (make sure you're in your `lambda/` directory before running this):
+
+```bash
+aws s3 cp ./smartthings-slack.zip s3://smartthings-slack-<unique ID>/ --region us-east-2
+```
+
+* Update your Lambda to use the latest code in the S3 bucket:
+
+```bash
+aws lambda update-function-code --function-name SmartThings-Slack --region us-east-2 --s3-bucket smartthings-slack-<unique ID> --s3-key smartthings-slack.zip
+```
+
+Now test your Lambda and make sure it's still running properly. Each time you update your code you'll need to re-zip it, push it to S3, and update your Lambda to use the updates zip file:
+
+```bash
+zip -r smartthings-slack.zip *
+
+aws s3 cp ./smartthings-slack.zip s3://smartthings-slack-<unique ID>/ --region us-east-2
+
+aws lambda update-function-code --function-name SmartThings-Slack --region us-east-2 --s3-bucket smartthings-slack-<unique ID> --s3-key smartthings-slack.zip
+```
+
 [cd ../lib](../lib/README.md)
