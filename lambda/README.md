@@ -57,7 +57,7 @@ zip -r smartthings-slack.zip *
 
 ### Deploying
 
-* From your `SmartThings-Slack` Function page
+* From your `SmartThings-Slack` Lambda function page
     * Add Environment Variables
         * Key: `SMARTTHINGS_SLACK_CLIENT_ID` 
             * `Client ID` from the SmartApp `Automation` page under `Develop`
@@ -67,6 +67,7 @@ zip -r smartthings-slack.zip *
             * Regenerate if needed
     * Under `Function Code` select `Upload a .zip file` for `Code entry type`
     * Upload a `.zip` of the contents in `lambda`
+    * Click `Save` in the top right corner
      
 ### Updating
 
