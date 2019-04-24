@@ -84,13 +84,15 @@ server.listen(8080, () => console.log(`Server is up and running on port 8080`));
 * Select your Simulated Device(s)
 * Tap save
 
-###Environment Configuration
+### Environment Configuration
 * Key: `SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID`
     * `export SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID=*`   
     * Found in Live Logs for your SmartApp in the
     [Developer Workspace](https://smartthings.developer.samsung.com/workspace/projects)
     or [Dynamo](https://console.aws.amazon.com/dynamodb/home?region=us-east-2#tables:selected=smartthings-slack-context-store;tab=items)
 * Restart app
+
+### Slack Configuration
 
 ## Deploying to Heroku
 

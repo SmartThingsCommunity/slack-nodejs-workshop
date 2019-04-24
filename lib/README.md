@@ -29,7 +29,7 @@ npm install request-promise-native@1.0.7 --save
 
 ### Move SmartApp Code into this Library
 * `smartApp`
-    * Copy `const smartapp = ...` from your lambda into `index.js`
+    * Copy `const smartApp = ...` from your lambda into `index.js`
         * Dependencies declared at the top also need to be copied
     * Export this const to be used in other projects
       * `module.exports = smartApp;`
