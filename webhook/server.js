@@ -1,11 +1,14 @@
 const express = require('express');
-const smartApp = require('smartapp-lib');
+const bodyParser = require('body-parser');
+const smartApp = require('smartapp-lib').smartApp;
+const handleSlashCommand = require('smartapp-lib').handleSlashCommand;
+
 const server = module.exports = express();
-const PORT = process.env.PORT || 8080;
 
 server.use(express.json());
+server.use(bodyParser.urlencoded({ extended: true }));
 
-server.post('/', function(req, res, next) {
+server.post('/', (req, res) => {
   console.log(req);
   console.log(`${new Date().toISOString()} ${req.method} ${req.path} ${req.body && req.body.lifecycle}`);
 
@@ -13,4 +16,11 @@ server.post('/', function(req, res, next) {
   smartApp.handleHttpCallback(req, res);
 });
 
-server.listen(PORT, () => console.log(`Server is up and running on port ${PORT}`));
+server.post('/slashCommand', async (req, res) => {
+  console.log(req);
+  const responseBody = await handleSlashCommand(req.body.text);
+  res.send(responseBody);
+});
+
+const port = process.env.PORT || 8080;
+server.listen(port, () => console.log(`Server is up and running on port ${port}`));

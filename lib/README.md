@@ -1,16 +1,4 @@
 # Library
-
-## Move SmartApp Code into this Library
-* Create a file `smartApp.js`
-    * `touch smartApp.js`
-* Copy `const smartapp = ...` from your lambda into `smartApp.js`
-    * Dependencies declared at the top also need to be copied
-* Export this const to be used in other projects
-  * `module.exports = smartApp;`
-* Copy over locales directory
-  * `cp -r ../lambda/locale .`
-* Set Library to use copied directory
-  * ``.configureI18n({directory: `${__dirname}/locales`})``
  
 ### Initialize NPM Project
 ```bash
@@ -23,7 +11,7 @@ Enter the following information:
 package name: (lib) smartapp-lib
 version: (1.0.0) 
 description: Shared Interaction with SmartThings
-entry point: (smartApp.js) 
+entry point: (index.js) 
 test command: 
 git repository: 
 keywords: 
@@ -37,6 +25,31 @@ npm install @smartthings/smartapp --save
 npm install @smartthings/dynamodb-context-store --save
 npm install request@2.88.0 --save
 npm install request-promise-native@1.0.7 --save
+```
+
+### Move SmartApp Code into this Library
+* `smartApp`
+    * Copy `const smartapp = ...` from your lambda into `index.js`
+        * Dependencies declared at the top also need to be copied
+    * Export this const to be used in other projects
+      * `module.exports = smartApp;`
+    * Copy over locales directory
+      * `cp -r ../lambda/locale .`
+    * Set Library to use copied directory
+      * ``.configureI18n({directory: `${__dirname}/locales`})``
+* `handleSlashCommand`
+    * Create function and move slash command handling inside:
+```
+async function handleSlashCommand(slashCommandBody) {
+  console.log('handleSlashCommand', 'slashCommandBody', slashCommandBody);
+}
+```    
+* Export `smartApp` and `handleSlashCommand` function
+```javascript
+module.exports = {
+  smartApp: smartApp,
+  handleSlashCommand: handleSlashCommand
+};
 ```
 
 ## Update Lambda
@@ -60,6 +73,6 @@ npm uninstall request-promise-native
     
 ## Updating Library
 * Make sure you repack in the respective project after updating this library
-    * `npm pack ../lib`
+    * `npm pack ../lib && npm install smartapp-lib-1.0.0.tgz`
 
 [cd ../webhook](../webhook/README.md)

@@ -14,20 +14,6 @@ Install the [SmartThings NodeJS SDK](https://github.com/SmartThingsCommunity/sma
 npm install @smartthings/smartapp --save
 ```
 
-## Updating
-
-```bash
-npm install
-```
-
-## Deploying
-
-Create zip of all files within this folder
-
-```bash
-zip -r smartthings-slack.zip *
-```
-
 ### AWS Configuration
 
 * Navigate to [Lambda Creation in AWS Console](https://console.aws.amazon.com/lambda/home?region=us-east-2#/create)
@@ -55,20 +41,48 @@ zip -r smartthings-slack.zip *
         * Click Save
         * Keep this tab open
 
-### Deploying
+### Lambda Configuration
 
-* From your `SmartThings-Slack` Lambda function page
-    * Add Environment Variables
-        * Key: `SMARTTHINGS_SLACK_CLIENT_ID` 
-            * `Client ID` from the SmartApp `Automation` page under `Develop`
-            * _This page should be open from the previous step_
-        * Key: `SMARTTHINGS_SLACK_CLIENT_SECRET`
-            * `Client Secret` from the SmartApp `Automation` page under `Develop`
-            * Regenerate if needed
-    * Under `Function Code` select `Upload a .zip file` for `Code entry type`
-    * Upload a `.zip` of the contents in `lambda`
-    * Click `Save` in the top right corner
-     
+* Navigate to your [`SmartThings-Slack` Function page](https://console.aws.amazon.com/lambda/home?region=us-east-2#/functions/SmartThings-Slack?tab=graph)
+* Add Environment Variables
+    * Key: `SMARTTHINGS_SLACK_CLIENT_ID` 
+        * `Client ID` from the SmartApp `Automation` page under `Develop`
+        * _This page should be open from the previous step_
+    * Key: `SMARTTHINGS_SLACK_CLIENT_SECRET`
+        * `Client Secret` from the SmartApp `Automation` page under `Develop`
+        * Regenerate if needed
+
+### Coding
+Add the following code to `index.js`
+```javascript
+const SmartApp = require('@smartthings/smartapp');
+
+const smartApp = new SmartApp({
+    clientId: process.env.SMARTTHINGS_SLACK_CLIENT_ID,
+    clientSecret: process.env.SMARTTHINGS_SLACK_CLIENT_SECRET
+});
+
+smartApp.configureI18n()
+  .page('mainPage', (context, page, configData) => {
+    page.section('lights', section => {
+      section.deviceSetting('lights').capabilities(['switch']).multiple(true).permissions('rx');
+    });
+  })
+
+exports.handler = async (event, context, callback) => {
+    smartApp.handleLambdaCallback(event, context, callback);
+};
+```
+## Deploying
+
+* Create zip of all files within this folder
+```bash
+zip -r smartthings-slack.zip *
+```
+* Under `Function Code` select `Upload a .zip file` for `Code entry type`
+* Upload a `.zip` of the contents in `lambda`
+* Click `Save` in the top right corner
+
 ### Updating
 
 Upload the respective zip to AWS either through the console UI or using the CLI
@@ -123,6 +137,7 @@ Upload your updated lambda function
 
 ## Exposing API Gateway Endpoint
 
+### Configure AWS
 * Navigate to your Lambda Function in the AWS Console
     * Create API Gateway
         * Select API Gateway from the Designer in the `Add triggers` section
@@ -142,6 +157,12 @@ Upload your updated lambda function
         * Type `SmartThings-Slack` in for `Lambda Function`
         * Click `Save`
         * Click `Ok` on the popup
+* Add the Installed SmartApp ID as an environment variable to your [Lambda](https://console.aws.amazon.com/lambda/home?region=us-east-2#/functions/SmartThings-Slack?tab=graph)
+    * key: `SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID`
+        * Your InstalledSmartAppId can be found by viewing [your DynamoDB table](https://console.aws.amazon.com/dynamodb/home?region=us-east-2#tables:selected=smartthings-slack-context-store;tab=items)
+        * Installed SmartApp IDs can be captured through events which are viewable under Live Logging section of the [Workspace](https://smartthings.developer.samsung.com/workspace/projects)
+        
+### Configure Slack
 * Navigate to your [slack apps](https://api.slack.com/apps)
     * Click `Slash Commands` under `Features`
     * Click `Create New Command`
@@ -153,20 +174,42 @@ Upload your updated lambda function
          ```
          https://*.execute-api.us-east-2.amazonaws.com/default/SmartThings-Slack
          ```
-    * For Short Description, input `Interact with SmartThings`
-    * Click Save    
+    * For `Short Description`, input `Interact with SmartThings`
+    * Click `Save`
+    
+### Coding
 * Update your Lambda Function
     * Install `qs` to handle parsing the url encoded payloads from slack
-        * `npm install qs --save`
+        * `npm install qs@6.5.2 --save`
         * This package can be used to parse the payload being emitted by slack
-    * Add the Installed SmartApp ID as an environment variable to your [Lambda](https://console.aws.amazon.com/lambda/home?region=us-east-2#/functions/SmartThings-Slack?tab=graph)
-        * key: `SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID`
-            * Your InstalledSmartAppId can be found by viewing [your DynamoDB table](https://console.aws.amazon.com/dynamodb/home?region=us-east-2#tables:selected=smartthings-slack-context-store;tab=items)
-            * Installed SmartApp IDs can be captured through events which are viewable under Live Logging section of the [Workspace](https://smartthings.developer.samsung.com/workspace/projects)
     * In order to handle requests a stored context needs to be retrieved. This will contain the necessary tokens for invoking SmartThings functionality.
-        * This context can be retrieved using `smartApp.withContext(process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID)`.
-    * A device API is exposed from the context `context.api.devices`
-        * Can be used to retrieve devices and invoke commands on configured devices (`context.config.lights`).
+        * This context can be retrieved using 
+        ```javascript
+        exports.handler = async (event, context, callback) => {
+          console.log('request', 'event', event);
+          if (event.resource === '/SmartThings-Slack') {
+            const smartAppContext = smartApp.withContext(process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID);
+            context.succeed({
+                "statusCode": 200,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": JSON.stringify({
+                    "text": "Device Commands",
+                    "attachments": [
+                        {
+                            "text": `Sent ${command} to ${apiDevices.map((device) => device.label)}`
+                        }
+                    ]
+                })
+            });
+        } else {
+            smartApp.handleLambdaCallback(event, context, callback);
+        }
+        console.log('request', 'event', event);
+        ```
+    * A device API is exposed from the context `smartAppContext.api.devices`
+        * Can be used to retrieve devices and invoke commands on configured devices (`smartAppContext.config.lights`).
     * Example command `/thingsbot switch on`
 
 ## Pushing Events via Webhook
@@ -190,14 +233,29 @@ Upload your updated lambda function
     * Install `request` to do HTTP Requests from your function
         * `npm install request@2.88.0 --save`
         * `npm install request-promise-native@1.0.7 --save`
-    * Create and emit a payload into Slack:
-    ```
-    await request({
-        method: 'POST',
-        uri: process.env.SLACK_SMARTTHINGS_WEBHOOK,
-        json: true,
-        body: {'text': "Hello, I'm ThingsBot"}
-    });
+    * Add device subscriptions to SmartApp
+    ```javascript
+    smartApp.updated( async (context, updateData) => {
+        console.log('updated', JSON.stringify(updateData));
+        await context.api.subscriptions.unsubscribeAll();
+        console.log('updated', 'unsubscribeAll() executed');
+        context.api.subscriptions.subscribeToDevices(context.config.lights, 'switch', 'switch', 'lightsSubscription');
+    }).subscribedEventHandler('lightsSubscription', async (context, deviceEvent) => {
+       console.log('lightsSubscription', 'context', context);
+       console.log('lightsSubscription', 'event', deviceEvent);
+   
+       const device = await context.api.devices.get(deviceEvent.deviceId);
+       console.log('lightsSubscription', 'device', device);
+   
+       const body = {'text': "Hello, I'm ThingsBot"};
+       const response = await request({
+         method: 'POST',
+         uri: process.env.SLACK_SMARTTHINGS_WEBHOOK,
+         json: true,
+         body: body
+       });
+       console.log('lightsSubscription', 'slack-webhook', response);
+     });
     ```
     * Update the text of that response to show the state of the device
     * Example message: `Simulated RGB Bulb emitted on for switch`
