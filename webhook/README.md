@@ -1,10 +1,11 @@
 # WebHooks Integration
 
 ## Code Changes
+
 * [Break Lambda into Library](../README.md)
 * Initial npm project `npm init`
 * Add [our library](../lib/README.md) as dependency
-    * `npm install ../lib --save`
+    * `npm pack ../lib && npm install smartapp-lib-1.0.0.tgz`
 * Use [express](https://expressjs.com/) to [handle requests with the sdk](https://github.com/SmartThingsCommunity/smartapp-sdk-nodejs/#running-it-as-a-web-service) exposed through the library
     * `npm install express --save`
     * `npm install body-parser --save`
@@ -34,18 +35,15 @@ server.post('/slashCommand', async (req, res) => {
 server.listen(8080, () => console.log(`Server is up and running on port 8080`));
 ```
 
-### Environment Configuration
-* Key: `SLACK_SMARTTHINGS_WEBHOOK`
-    * `export SLACK_SMARTTHINGS_WEBHOOK=*`
-    * Found at [your Slack Apps](https://api.slack.com/apps) or [lambda function](https://console.aws.amazon.com/lambda/home?region=us-east-2#/functions/SmartThings-Slack?tab=graph)
-
 ## Running
+
 * `npm start`
 * Install [localtunnel](https://localtunnel.github.io/www/) or [ngrok](https://ngrok.com/download)
     * Forward to the port your local server is listening on
     * LocalTunnel: `lt --port 8080 --subdomain {{ pick a name }}`
 
 ## SmartThings Configuration
+
 * [Create a new Project](https://smartthings.developer.samsung.com/workspace/projects/new) or reuse your existing project
     * Click `CONTINUE` under `Automation for the SmartThings App`
     * Enter `Slack-Webhook` under `Give this project a name`
@@ -68,6 +66,7 @@ server.listen(8080, () => console.log(`Server is up and running on port 8080`));
     * Click `Got it`
 
 ### Environment Configuration
+
 * Key: `SMARTTHINGS_SLACK_CLIENT_ID` 
     * `export SMARTTHINGS_SLACK_CLIENT_ID=*`
     * Found in `Client ID` from the [SmartApp `Automation` page](https://smartthings.developer.samsung.com/workspace/projects) under `Develop`
@@ -78,6 +77,7 @@ server.listen(8080, () => console.log(`Server is up and running on port 8080`));
 * Restart app
 
 ## Installation
+
 * Navigate to `Automations` with your SmartThings Mobile App
 * Select the `+`
 * Scroll down and tap `Slack Webhook`
@@ -85,14 +85,27 @@ server.listen(8080, () => console.log(`Server is up and running on port 8080`));
 * Tap save
 
 ### Environment Configuration
+
 * Key: `SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID`
     * `export SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID=*`   
     * Found in Live Logs for your SmartApp in the
     [Developer Workspace](https://smartthings.developer.samsung.com/workspace/projects)
     or [Dynamo](https://console.aws.amazon.com/dynamodb/home?region=us-east-2#tables:selected=smartthings-slack-context-store;tab=items)
+* Key: `SLACK_SMARTTHINGS_WEBHOOK`
+    * `export SLACK_SMARTTHINGS_WEBHOOK=*`
+    * Found at [your Slack Apps](https://api.slack.com/apps) or [lambda function](https://console.aws.amazon.com/lambda/home?region=us-east-2#/functions/SmartThings-Slack?tab=graph)
 * Restart app
 
 ### Slack Configuration
+
+* Navigate to your [slack apps](https://api.slack.com/apps)
+    * Click `Slash Commands` under `Features`
+    * Click `Create New Command`
+    * Click the edit button to the right of `/thingsbot`
+    * Update the `Request URL`
+        * Input your localtunnel or ngork URL with `/slashCommand`
+        * eg: `https://smartthings-slack.localtunnel.me/slashCommand`
+    * Click `Save`
 
 ## Deploying to Heroku
 
