@@ -1,17 +1,22 @@
 # Slack SmartThings Integration
 
-### Git Setup
+### Local Setup
 
-* [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-* Clone this repo or a fork locally
-    * `git clone git@github.com:SmartThingsCommunity/slack-nodejs-workshop.git`
-* Checkout the start branch
-    * `git checkout start`
+* Git
+    * [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+    * Clone this repo or a fork locally
+        * `git clone git@github.com:SmartThingsCommunity/slack-nodejs-workshop.git`
+    * Checkout the start branch
+        * `git checkout start`
+* Node
+    * [Install node](https://nodejs.org)
 
 ### AWS Setup
 
 * Create [AWS Account](https://portal.aws.amazon.com/billing/signup?redirect_url=https%3A%2F%2Faws.amazon.com%2Fregistration-confirmation#/)
 * Install and configure [aws-cli](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+    * Credit card is required, but we will be using services offered in the free tier
+        * S3 isn't free, but is optional and rather cheap
 
 ### SmartThings Setup
 * Download the iOS/Android SmartThings Mobile App
