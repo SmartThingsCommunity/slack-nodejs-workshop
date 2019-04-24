@@ -30,34 +30,6 @@ aws lambda add-permission --function-name SmartThings-Slack --statement-id smart
     * Click `Create function`
     * Keep this tab open
 
-### SmartThings Configuration
-
-* Create SmartApp (SmartThings Integration)
-    * Navigate to the [SmartThings developer portal](https://smartthings.developer.samsung.com/workspace/projects)
-    * Click `Log in With Samsung Account`
-        * Sign into your Samsung account or create one
-    * Create a new project
-        * Select `Automation for the SmartThings App`
-        * Enter `Slack Lambda`
-        * Select `Register Automation SmartApp`
-        * Select `AWS Lambda`
-        * Enter the ARN from the top right corner of your Lambda function configuration page, then click Next
-        * Select device read (`r:devices:*`) and device execute (`x:devices:*`) for scopes, then click Next
-        * Enter `Slack Lambda` for Automation Display Name
-        * Click Save
-        * Keep this tab open
-
-### Lambda Configuration
-
-* Navigate to your [`SmartThings-Slack` Function page](https://console.aws.amazon.com/lambda/home?region=us-east-2#/functions/SmartThings-Slack?tab=graph)
-* Add Environment Variables
-    * Key: `SMARTTHINGS_SLACK_CLIENT_ID` 
-        * `Client ID` from the SmartApp `Automation` page under `Develop`
-        * _This page should be open from the previous step_
-    * Key: `SMARTTHINGS_SLACK_CLIENT_SECRET`
-        * `Client Secret` from the SmartApp `Automation` page under `Develop`
-        * Regenerate if needed
-
 ### Initial Lambda
 
 Add the following code to `index.js`
@@ -90,6 +62,34 @@ zip -r smartthings-slack.zip *
 * Under `Function Code` select `Upload a .zip file` for `Code entry type`
 * Upload a `.zip` of the contents in `lambda`
 * Click `Save` in the top right corner
+
+### SmartThings Configuration
+
+* Create SmartApp (SmartThings Integration)
+    * Navigate to the [SmartThings developer portal](https://smartthings.developer.samsung.com/workspace/projects)
+    * Click `Log in With Samsung Account`
+        * Sign into your Samsung account or create one
+    * Create a new project
+        * Select `Automation for the SmartThings App`
+        * Enter `Slack Lambda`
+        * Select `Register Automation SmartApp`
+        * Select `AWS Lambda`
+        * Enter the ARN from the top right corner of your Lambda function configuration page, then click Next
+        * Select device read (`r:devices:*`) and device execute (`x:devices:*`) for scopes, then click Next
+        * Enter `Slack Lambda` for Automation Display Name
+        * Click Save
+        * Keep this tab open
+
+### Lambda Configuration
+
+* Navigate to your [`SmartThings-Slack` Function page](https://console.aws.amazon.com/lambda/home?region=us-east-2#/functions/SmartThings-Slack?tab=graph)
+* Add Environment Variables
+    * Key: `SMARTTHINGS_SLACK_CLIENT_ID` 
+        * `Client ID` from the SmartApp `Automation` page under `Develop`
+        * _This page should be open from the previous step_
+    * Key: `SMARTTHINGS_SLACK_CLIENT_SECRET`
+        * `Client Secret` from the SmartApp `Automation` page under `Develop`
+        * Regenerate if needed
 
 ### Updating
 
