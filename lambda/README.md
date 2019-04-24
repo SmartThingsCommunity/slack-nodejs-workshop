@@ -228,7 +228,7 @@ Upload your updated lambda function
                 "headers": {
                     "Content-Type": "application/json"
                 },
-                "body": body
+                "body": JSON.stringify(body)
             });
         } else {
             smartApp.handleLambdaCallback(event, context, callback);
