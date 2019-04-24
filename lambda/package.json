@@ -16,7 +16,9 @@
   },
   "homepage": "https://github.com/gausnes/smartthings-slack#readme",
   "dependencies": {
-    "qs": "^6.7.0",
+    "aws-serverless-express": "^3.3.6",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
     "smartapp-lib": "file:smartapp-lib-1.0.0.tgz"
   }
 }
