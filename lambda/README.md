@@ -227,6 +227,7 @@ Upload your updated lambda function
         } else {
             smartApp.handleLambdaCallback(event, context, callback);
         }
+    }
     ```
     * Example command `/thingsbot switch off`
 
