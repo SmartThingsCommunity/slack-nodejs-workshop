@@ -1,6 +1,12 @@
 # Slack SmartThings Integration
 
-## AWS Lambda
+### Git Setup
+
+* [Install git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+* Clone this repo or a fork locally
+    * `git clone git@github.com:SmartThingsCommunity/slack-nodejs-workshop.git`
+* Checkout the start branch
+    * `git checkout start`
 
 ### AWS Setup
 
