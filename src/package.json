@@ -4,6 +4,7 @@
   "description": "SmartThings Endpoint App and Slack Integration",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,7 +17,12 @@
   },
   "homepage": "https://github.com/gausnes/smartthings-slack#readme",
   "dependencies": {
-    "qs": "^6.7.0",
-    "smartapp-lib": "file:smartapp-lib-1.0.0.tgz"
+    "@smartthings/dynamodb-context-store": "^1.0.1",
+    "@smartthings/smartapp": "^1.1.3",
+    "aws-serverless-express": "^3.3.6",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7"
   }
 }

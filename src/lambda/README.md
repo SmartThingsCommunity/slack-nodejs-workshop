@@ -130,13 +130,13 @@ In order for your lambda to persist this information a dynamodb table and policy
     * Set the primary key to `installedAppId`
 * [Create new policy](https://console.aws.amazon.com/iam/home?region=us-east-2#/policies$new?step=edit):
     * Select the `JSON` tab
-    * Copy `../etc/dynamo-policy.json` into the text field
+    * Copy [this policy](../etc/dynamo-policy.json) into the text field
     * Replace `{{ AWS Account Id }}` with your [AWS Account Id](https://console.aws.amazon.com/billing/home?#/account)
     * Click `Review Policy`
     * Input `SmartThingsSlackContextStore` as the name
     * Click `Create Policy`
 * [Add the policy above to your lambda's role](https://console.aws.amazon.com/iam/home?region=us-east-2#/roles):
-    * Select role with name `SmartThings-Slack-role-*`
+    * Select role with name `SmartThings-Slack*`
     * Click `Attach Policies`
     * Search for `SmartThingsSlackContextStore`
     * Select the checkbox next the found policy
