@@ -18,11 +18,8 @@
     * Credit card is required, but we will be using services offered in the free tier
         * S3 isn't free, but is optional and rather cheap
 
-### SmartThings Setup
-* Download the iOS/Android SmartThings Mobile App
-    * Login to your Samsung Account
-        * [Create one](https://account.samsung.com/accounts/v1/MBR/terms#) if you don't already
-    * [Enable Developer Mode](https://smartthings.developer.samsung.com/docs/guides/testing/developer-mode.html)
+### SmartThings Setup in Browser
+
 * Create a Simulated RGB Bulb
     * Navigate to the [legacy developer portal](https://graph-na04-useast2.api.smartthings.com/location/list)
     * Enter `Simulated RGB Bulb` for `Name`
@@ -33,8 +30,15 @@
     * Click `Create`
     
 > You should be able to modify the state (on/off, color) of this
-simulated device through the UI in the downloaded mobile application.
-This will be useful for testing your application
+simulated device through the UI in the mobile application.
+This will be useful for testing your integration
+
+### SmartThings Setup in App
+
+* Download and open the iOS/Android SmartThings Mobile App
+    * Log into your Samsung Account
+        * [Create one](https://account.samsung.com/accounts/v1/MBR/terms#) if you haven't already
+    * [Enable Developer Mode](https://smartthings.developer.samsung.com/docs/guides/testing/developer-mode.html) (required for running custom automations)
 
 ### Slack Setup
 * Navigate to your [Slack Apps](https://api.slack.com/apps)
