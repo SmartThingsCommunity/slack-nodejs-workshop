@@ -7,4 +7,4 @@ npm-debug.log
 .idea
 *.pub
 *.tgz
-
+*.code-workspace
