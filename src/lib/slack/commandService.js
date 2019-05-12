@@ -1,21 +1,16 @@
 'use strict';
 
-const smartappService = require('../smartthings/smartappService');
+const ThingsBotCommand = require('./commands/ThingsBotCommand');
 
 const commandService = {
-    getDevices: async function(installedSmartAppId) {
-        const [ contextError, smartappContext ] = await smartappService.getSmartAppContext(installedSmartAppId);
-        if (contextError) { return; }
+    thingsbotCommand: async function(installedSmartAppId, payload) {
+        const command = Object.create(ThingsBotCommand).init(installedSmartAppId, payload);
 
-        var deviceListError;
-        const deviceList = await smartappContext.api.devices.listAll();
-        .catch((err) => {
-            console.error(`Error listing devices for InstalledSmartApp ${installedSmartAppId}`, err);
-            deviceListError = err;
-        });
-        if (deviceListError) { return; }
-        
-        return deviceList.items;
+        if (!command) {
+            return Promise.reject('Failed to initialize new ThingsBotCommand Object');
+        }
+
+        await command.sendResponse(await command.deviceCommandsBlock)
     }
 };
 

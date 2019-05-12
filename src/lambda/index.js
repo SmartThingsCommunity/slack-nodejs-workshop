@@ -9,6 +9,8 @@ const awsServerlessExpress = require('aws-serverless-express'),
       api = express(),
       server = awsServerlessExpress.createServer(api);
 
+process.env.EXECUTION_CONTEXT = 'LAMBDA';
+
 api.use(bodyParser.json());
 api.use(bodyParser.urlencoded({ extended: true }));
 // Add middleware to pass Lambda payloads through standard express routing framework

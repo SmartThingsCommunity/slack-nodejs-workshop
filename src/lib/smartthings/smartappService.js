@@ -14,7 +14,52 @@ const smartappService = {
         return [ contextError, smartAppContext ];
     },
 
-    executeDeviceOn: async function(deviceId, installedSmartAppId, responseUrl) {
+    getDeviceList: async function(smartAppContext) {
+        var deviceListError;
+        const deviceList = await smartAppContext.api.devices.listAll()
+        .catch((err) => {
+            console.error(`ERROR ** Error listing devices for InstalledSmartApp ${installedSmartAppId}`, err);
+            deviceListError = err;
+        });
+        return [ deviceListError, deviceList ];
+    },
+
+    sendCommandSuccess: async function(responseUrl, command) {
+        await request({
+            method: 'POST',
+            uri: responseUrl,
+            json: true,
+            body: { "text": `Device command sent :thumbsup:` }
+        }).catch((err) => {
+            console.error(`ERROR ** Error posting to Slack response URL in ${command} command after a successful sendCommand`, err);
+        });
+    },
+
+    sendCommandError: async function(responseUrl, deviceId, command) {
+        await request({
+            method: 'POST',
+            uri: responseUrl,
+            json: true,
+            body: { "text": `Uh oh, there was an error trying to send the ${command} command to your device with ID ${deviceId}. Please try again.` }
+        }).catch((err) => {
+            console.error(`ERROR ** Error posting to Slack response URL for ${command} command after a failed sendCommand`, err);
+        });
+    },
+
+    configNotFoundErrorResponse: async function(responseUrl, deviceId, command) {
+        await request({
+            method: 'POST',
+            uri: responseUrl,
+            json: true,
+            body: { "text": `Oops, I wasn't able to find a device with the ID you specified for that command. Double check that the device with ID ${deviceId} was not deleted and then try again.` }
+        }).catch((err) => {
+            console.error(`ERROR ** Error posting to Slack response URL for ${command} command`, err);
+        });
+    }
+}
+
+const executableCommands = {
+    deviceOn: async function(deviceId, installedSmartAppId, responseUrl) {
         const [ contextError, smartappContext ] = await this.getSmartAppContext(installedSmartAppId);
         if (contextError) { return; };
 
@@ -32,12 +77,13 @@ const smartappService = {
         });
         if (sendCommandError) {
             await this.sendCommandError(responseUrl, deviceId, 'on');
-        } else {
-            await this.sendCommandSuccess(responseUrl, 'on');
+            return;
         }
+
+        await this.sendCommandSuccess(responseUrl, 'on');
     },
 
-    executeDeviceOff: async function(deviceId, installedSmartAppId, responseUrl) {
+    deviceOff: async function(deviceId, installedSmartAppId, responseUrl) {
         const [ contextError, smartappContext ] = await this.getSmartAppContext(installedSmartAppId);
         if (contextError) { return; };
 
@@ -56,12 +102,12 @@ const smartappService = {
         if (sendCommandError) {
             await this.sendCommandError(responseUrl, deviceId, 'off');
             return;
-        } else {
-            await this.sendCommandSuccess(responseUrl, 'off');
         }
+        
+        await this.sendCommandSuccess(responseUrl, 'off');
     },
 
-    executeDeviceSetColor: async function(deviceId, color, installedSmartAppId, responseUrl) {
+    deviceSetColor: async function(deviceId, color, installedSmartAppId, responseUrl) {
         const [ contextError, smartappContext ] = await this.getSmartAppContext(installedSmartAppId);
         if (contextError) { return; };
 
@@ -92,43 +138,11 @@ const smartappService = {
         if (sendCommandError) {
             await this.sendCommandError(responseUrl, deviceId, 'setColor');
             return;
-        } else {
-            await this.sendCommandSuccess(responseUrl, 'setColor');
         }
-    },
-
-    sendCommandSuccess: async function(responseUrl, command) {
-        await request({
-            method: 'POST',
-            uri: responseUrl,
-            json: true,
-            body: { "text": `Device command sent :thumbsup:` }
-        }).catch((err) => {
-            console.error(`ERROR ** Error posting to Slack response URL in ${command} command after a successful sendCommand`, err);
-        });
-    },
-
-    configNotFoundErrorResponse: async function(responseUrl, deviceId, command) {
-        await request({
-            method: 'POST',
-            uri: responseUrl,
-            json: true,
-            body: { "text": `Oops, I wasn't able to find a device with the ID you specified for that command. Double check that the device with ID ${deviceId} was not deleted and then try again.` }
-        }).catch((err) => {
-            console.error(`ERROR ** Error posting to Slack response URL for ${command} command`, err);
-        });
-    },
-
-    sendCommandError: async function(responseUrl, deviceId, command) {
-        await request({
-            method: 'POST',
-            uri: responseUrl,
-            json: true,
-            body: { "text": `Uh oh, there was an error trying to send the ${command} command to your device with ID ${deviceId}. Please try again.` }
-        }).catch((err) => {
-            console.error(`ERROR ** Error posting to Slack response URL for ${command} command after a failed sendCommand`, err);
-        });
+        
+        await this.sendCommandSuccess(responseUrl, 'setColor');
     }
 }
 
+Object.setPrototypeOf(smartappService, executableCommands);
 module.exports = smartappService;
