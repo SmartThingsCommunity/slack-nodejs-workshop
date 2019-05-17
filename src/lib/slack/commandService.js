@@ -3,7 +3,7 @@
 const ThingsBotCommand = require('./commands/ThingsBotCommand');
 
 const commandService = {
-    thingsbotCommand: async function(installedSmartAppId, payload) {
+    thingsBotCommand: async function(installedSmartAppId, payload) {
         const command = Object.create(ThingsBotCommand).init(installedSmartAppId, payload);
 
         if (!command) {

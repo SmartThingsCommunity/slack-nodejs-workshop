@@ -1,7 +1,7 @@
 'use strict';
 
 const SlashCommand = require('./SlashCommand'),
-      smartappService = require('../../smartthings/smartappService');
+      smartAppService = require('../../smartthings/smartAppService');
 
 const ThingsBotCommand = {
     init(installedSmartAppId, body = {}) {
@@ -19,18 +19,18 @@ const ThingsBotCommand = {
             const deviceList = await getDeviceList(this.installedSmartAppId);
 
             if (!deviceList) {
-                console.error('ERROR ** Failed to pull valid device list in deviceCommandsBlock getter')
+                console.error('ERROR ** Failed to pull valid device list in deviceCommandsBlock getter');
                 return {
                     "response_type": "ephemeral",
                     "text": "Uh oh, there was a problem pulling your device list. Please try again."
                 };
-            } else if (deviceList.length == 0) {
+            } else if (deviceList.length === 0) {
                 return {
                     "response_type": "ephemeral",
                     "text": "Oops, looks like you don't have any devices on your SmartThings account! Please add a device and then try again."
                 };
             }
-            
+
             return {
                 "response_type": "ephemeral",
                 "text": "Select a device to send a command to:",
@@ -71,15 +71,12 @@ const ThingsBotCommand = {
             };
         })();
     }
-}
+};
 
 async function getDeviceList(installedSmartAppId) {
-    const [ contextError, smartappContext ] = await smartappService.getSmartAppContext(installedSmartAppId);
-    if (contextError) { return; }
+    const smartAppContext = await smartAppService.getSmartAppContext(installedSmartAppId);
+    const deviceList = await smartAppService.getDeviceList(smartAppContext);
 
-    const [ deviceListError, deviceList ] = await smartappService.getDeviceList(smartappContext);
-    if (deviceListError) { return; }
-    
     return deviceList ? deviceList.items : [];
 }
 

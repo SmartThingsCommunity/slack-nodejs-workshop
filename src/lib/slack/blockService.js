@@ -7,15 +7,17 @@ const blockService = {
     sendDeviceCommands: async function(deviceId, deviceName, installedSmartAppId, responseUrl) {
         const deviceCommand = Object.create(DeviceCommand).init(deviceId, deviceName, installedSmartAppId);
 
-        await request({
-	        method: 'POST',
-	        uri: responseUrl,
-	        json: true,
-	        body: deviceCommand.commandsBlock
-        }).catch((err) => {
-            console.error('Error posting to Slack response URL in deviceList', err);
-        });
+        try {
+          await request({
+            method: 'POST',
+            uri: responseUrl,
+            json: true,
+            body: deviceCommand.commandsBlock
+          })
+        } catch (err) {
+          console.error('Error posting to Slack response URL in deviceList', err);
+        }
     }
-}
+};
 
 module.exports = blockService;

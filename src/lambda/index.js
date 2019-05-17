@@ -27,4 +27,4 @@ exports.handler = async (event, context, callback) => {
     } else { // Direct Lambda invocation from SmartThings
         return smartapp.handleLambdaCallback(event, context, callback);
     }
-}
+};

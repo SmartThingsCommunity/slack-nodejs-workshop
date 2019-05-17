@@ -9,17 +9,19 @@ const errorResponseService = {
             return;
         }
 
-        await request({
-	        method: 'POST',
-	        uri: responseUrl,
-	        json: true,
-	        body: {
-                text: 'Uh oh, there was an unexpected error while attempting to execute your command. Please try again.'
+        try {
+          await request({
+            method: 'POST',
+            uri: responseUrl,
+            json: true,
+            body: {
+              text: 'Uh oh, there was an unexpected error while attempting to execute your command. Please try again.'
             }
-        }).catch((err) => {
-            console.error('ERROR ** Error posting to Slack response URL', err);
-        });
+          })
+        } catch (err) {
+          console.error('ERROR ** Error posting to Slack response URL', err);
+        }
     }
-}
+};
 
 module.exports = errorResponseService;

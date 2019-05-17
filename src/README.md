@@ -26,7 +26,7 @@ server.post('/', (req, res) => {
   smartApp.handleHttpCallback(req, res);
 });
 
-server.post('/slashCommand', async (req, res) => {
+server.post('/slack', async (req, res) => {
   console.log(req);
   const responseBody = await handleSlashCommand(req.body.text);
   res.send(responseBody);
@@ -103,8 +103,8 @@ server.listen(8080, () => console.log(`Server is up and running on port 8080`));
     * Click `Create New Command`
     * Click the edit button to the right of `/thingsbot`
     * Update the `Request URL`
-        * Input your localtunnel or ngork URL with `/slashCommand`
-        * eg: `https://smartthings-slack.localtunnel.me/slashCommand`
+        * Input your localtunnel or ngork URL with `/SmartThings-Slack/slack/cmd/thingsbot`
+        * eg: `https://smartthings-slack.localtunnel.me/SmartThings-Slack/slack/cmd/thingsbot`
     * Click `Save`
 
 ## Deploying to Heroku
