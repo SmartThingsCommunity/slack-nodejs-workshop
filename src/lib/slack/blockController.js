@@ -1,9 +1,8 @@
 'use strict';
 
-const request = require('request-promise-native'),
-      blockService = require('./blockService'),
+const blockService = require('./blockService'),
       errorResponseService = require('./errorResponseService'),
-      smartappService = require('../smartthings/smartappService');
+      smartAppService = require('../smartthings/smartAppService');
 
 const blockController = {
     receive: async function(req) {
@@ -41,14 +40,14 @@ const commands = {
         const deviceId = action.value,
               installedSmartAppId = action.block_id;
 
-        await smartappService.deviceOn(deviceId, installedSmartAppId, responseUrl);
+        await smartAppService.deviceOn(deviceId, installedSmartAppId, responseUrl);
     },
 
     deviceOff: async function(action, responseUrl) {
         const deviceId = action.value,
               installedSmartAppId = action.block_id;
 
-        await smartappService.deviceOff(deviceId, installedSmartAppId, responseUrl);
+        await smartAppService.deviceOff(deviceId, installedSmartAppId, responseUrl);
     },
 
     deviceSetColor: async function(action, responseUrl) {
@@ -58,7 +57,7 @@ const commands = {
               color = parseInt(action.selected_option.value.split('.')[1])/360*100, // Convert HSL Hue degree to percent
               installedSmartAppId = action.block_id;
 
-        await smartappService.deviceSetColor(deviceId, color, installedSmartAppId, responseUrl);
+        await smartAppService.deviceSetColor(deviceId, color, installedSmartAppId, responseUrl);
     }
 };
 

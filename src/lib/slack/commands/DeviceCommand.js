@@ -109,6 +109,6 @@ const DeviceCommand = {
             ]
         }
     }
-}
+};
 
 module.exports = DeviceCommand;

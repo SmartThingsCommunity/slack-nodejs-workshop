@@ -8,3 +8,4 @@ npm-debug.log
 *.pub
 *.tgz
 *.code-workspace
+src/env.sh

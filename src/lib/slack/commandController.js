@@ -17,15 +17,15 @@ const commandController = {
             await errorResponseService.sendErrorResponse(req.body.response_url);
         }
     }
-}
+};
 
 const commands = {
-    thingsbot: async function(req) {
-        const installedSmartAppId = req.query.installedSmartAppId;
+    thingsBot: async function(req) {
+        const installedSmartAppId = process.env.SMARTTHINGS_SLACK_INSTALLED_SMARTAPP_ID;
 
-        return await commandService.thingsbotCommand(installedSmartAppId, req.body);
+        return await commandService.thingsBotCommand(installedSmartAppId, req.body);
     }
-}
+};
 
 Object.setPrototypeOf(commandController, commands);
 module.exports = commandController;

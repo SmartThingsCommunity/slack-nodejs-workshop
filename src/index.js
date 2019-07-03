@@ -2,8 +2,7 @@
 
 const bodyParser = require('body-parser'),
       express = require('express'),
-      smartApp = require('./lib/smartApp'),
-      fs = require('fs'),
+      smartApp = require('./lib/smartApp').publicKey('@smartthings_rsa.pub'),
 
       port = process.env.PORT || 8080,
       api = express();
@@ -13,10 +12,8 @@ api.use(bodyParser.urlencoded({ extended: true }));
 
 api.use('/SmartThings-Slack', require('./lib/api'));
 
-api.post('/smartapp', (req, res) => {
+api.post('/', (req, res) => {
   console.log(`${new Date().toISOString()} ${req.method} ${req.path} ${req.body && req.body.lifecycle}`);
-
-  smartApp.publicKey('@smartthings_rsa.pub');
   smartApp.handleHttpCallback(req, res);
 });
 
